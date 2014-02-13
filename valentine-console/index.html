@@ -1,0 +1,52 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+          "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+  <head>
+    <title>JQuery Console Demo</title>
+    <meta name="Content-Type" content="text/html; charset=UTF-8">
+    <script type="text/javascript" src="jquery-1.4.2.min.js"></script>
+    <script type="text/javascript" src="jquery.console.js"></script>
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css">
+    <link rel="stylesheet" href="css/tryhaskell.css">
+    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Merriweather">
+    
+    <!-- Everything beyond this point is user-customized -->
+    <script type="text/javascript">
+      $(document).ready(function(){
+         /* First console */
+         var console1 = $('#console');
+         $('body').append(console1);
+         var controller1 = console1.console({
+           promptLabel: 'Brendan\'s Console > ',
+           commandValidate: function(line){
+               if (line == "") return false;
+               else return true;
+           },
+           commandHandle:function(line){
+             if(line.toLowerCase() === "ls") {
+               return [{msg:"message"},
+                       {msg:"news"}]
+             } else if(line.toLowerCase() === "cat message") {
+               return [{msg:"\u200B\u200B\u200B\u2588\u200B\u2588\u2588\u2588\u2588\u2588\u200B\u2588\u2588\u2588\u200B\u200B\u200B\u2588\u2588\u200B\u200B\u2588\u200B\u2588\u200B\u200B\u2588\u2588\u200B\u200B\u2588\u2588\u200B\u200B\u2588\u200B\u200B\u2588\u200B\u200B\u200B\u200B\u2588\u200B\u200B\u2588\u200B\u2588\u200B\u200B\u2588\u200B\u2588\u200B\u2588\u2588\u200B\u2588\u2588\u200B\u200B\u2588\u2588\u200B\u200B\u200B\u200B\u2588\u2588\u200B\u200B\u200B\u2588\u2588\u200B\u200B\u2588\u200B\u2588\u2588\u200B\u200B\u200B\u200B\u2588\u200B\u2588\u200B\u2588\u2588\u200B\u200B\u2588\u2588\u2588\u200B\u200B\u200B\u200B\u200B\u2588\u200B\u2588\u200B\u2588\u200B\u2588\u200B\u200B\u2588\u200B\u2588\u200B\u2588\u200B\u200B\u200B\u200B\u200B\u200B\u2588\u200B\u200B\u2588\u200B\u2588\u200B\u2588"},
+               {msg:"valentine"}];
+             } else if(line.toLowerCase() === "cat news") {
+               return [{msg:"https://news.ycombinator.com/item?id=7221847"}]
+             } else {
+               return [{msg:"Unrecognized command. You can use \"ls\" to get all filenames, and use \"cat filename\" to get the content of that file."}]
+             }
+           },
+           autofocus: true,
+           animateScroll: true,
+           promptHistory: true,
+           welcomeMessage: 'Hi, Bobolone! I\'m very glad to be able to get rid of that slow text communicator! Brendan\'s computer is recently hacked by sorpa\'as. Please check out whether there\'s some other files that does not belong to Brendan. You can use "ls" to get all filenames, and use "cat filename" to get the content of that file.',
+           continuedPromptLabel: '> '
+         });
+       });
+    </script>
+  </head>
+  <body>
+          <div class="span12" id="console">
+          </div>
+    
+  </body>
+</html>
