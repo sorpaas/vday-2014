@@ -17,7 +17,8 @@ module.exports = function(grunt) {
           'scripts/ui-tabs.js',
           'scripts/dot.js',
           'scripts/shape-builder.js',
-          'scripts/shape.js'
+          'scripts/shape.js',
+          'scripts/vday.js'
         ],
         dest: 'release/shape-shifter.js'
       }

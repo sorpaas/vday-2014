@@ -8,23 +8,16 @@
 
 var S = {
   init: function () {
-    var action = window.location.href,
-        i = action.indexOf('?a=');
-
     S.Drawing.init('.canvas');
     S.ShapeBuilder.init();
     S.UI.init();
     document.body.classList.add('body--ready');
 
-    if (i !== -1) {
-      S.UI.simulate(decodeURI(action).substring(i + 3));
-    } else {
-      S.UI.simulate('Shape|Shifter|Type|to start|#icon thumbs-up|#countdown 3||');
-    }
-
     S.Drawing.loop(function () {
       S.Shape.render();
     });
+    
+    S.VDAY.init();
   }
 };
 
@@ -115,8 +108,6 @@ S.Color.prototype = {
 S.UI = (function () {
   var input = document.querySelector('.ui-input'),
       ui = document.querySelector('.ui'),
-      help = document.querySelector('.help'),
-      commands = document.querySelector('.commands'),
       overlay = document.querySelector('.overlay'),
       canvas = document.querySelector('.canvas'),
       interval,
@@ -157,6 +148,7 @@ S.UI = (function () {
         fn(currentAction);
 
         if ((!reverse && max && currentAction === max) || (reverse && currentAction === 0)) {
+          S.VDAY.onSimulationFinished();
           clearInterval(interval);
         }
       }, delay);
@@ -267,7 +259,7 @@ S.UI = (function () {
       if (e.keyCode === 13) {
         firstAction = false;
         reset();
-        performAction(input.value);
+        S.VDAY.onMessageRecieved(input.value);
       }
     });
 
@@ -282,48 +274,6 @@ S.UI = (function () {
     input.addEventListener('input', checkInputWidth);
     input.addEventListener('change', checkInputWidth);
     input.addEventListener('focus', checkInputWidth);
-
-    help.addEventListener('click', function () {
-      overlay.classList.toggle('overlay--visible');
-
-      if (overlay.classList.contains('overlay--visible')) {
-        reset(true);
-      }
-    });
-
-    commands.addEventListener('click', function (e) {
-      var el,
-          info,
-          demo,
-          url;
-
-      if (e.target.classList.contains('commands-item')) {
-        el = e.target;
-      } else {
-        el = e.target.parentNode.classList.contains('commands-item') ? e.target.parentNode : e.target.parentNode.parentNode;
-      }
-
-      info = el && el.querySelector('.commands-item-info');
-      demo = el && info.getAttribute('data-demo');
-      url = el && info.getAttribute('data-url');
-
-      if (info) {
-        overlay.classList.remove('overlay--visible');
-
-        if (demo) {
-          input.value = demo;
-
-          if (isTouch) {
-            reset();
-            performAction(input.value);
-          } else {
-            input.focus();
-          }
-        } else if (url) {
-          window.location = url;
-        }
-      }
-    });
 
     canvas.addEventListener('click', function () {
       overlay.classList.remove('overlay--visible');
@@ -344,45 +294,24 @@ S.UI = (function () {
 
     simulate: function (action) {
       performAction(action);
-    }
+    },
+    
+    hideInput: function () {
+      input.style.display = 'none';
+    },
+  
+    showInput: function () {
+      input.style.display = 'block';
+      input.focus();
+    },
   };
 }());
 
 
 S.UI.Tabs = (function () {
-  var labels = document.querySelector('.tabs-labels'),
-      triggers = document.querySelectorAll('.tabs-label'),
-      panels = document.querySelectorAll('.tabs-panel');
-
-  function activate(i) {
-    triggers[i].classList.add('tabs-label--active');
-    panels[i].classList.add('tabs-panel--active');
-  }
-
-  function bindEvents() {
-    labels.addEventListener('click', function (e) {
-      var el = e.target,
-          index;
-
-      if (el.classList.contains('tabs-label')) {
-        for (var t = 0; t < triggers.length; t++) {
-          triggers[t].classList.remove('tabs-label--active');
-          panels[t].classList.remove('tabs-panel--active');
-
-          if (el === triggers[t]) {
-            index = t;
-          }
-        }
-
-        activate(index);
-      }
-    });
-  }
 
   return {
     init: function () {
-      activate(0);
-      bindEvents();
     }
   };
 }());
@@ -735,3 +664,103 @@ S.Shape = (function () {
     }
   };
 }());
+
+S.VDAY = (function () {
+  var currentState = null;
+  var currentStepIndex = 0;
+  var allSteps = [
+    {
+      init: function () {
+        return "Hi,|Bobolone!||My name is|pa'acif,|The naughty|spirit|created by|Brendan.||Say hello|to me!||Just type|\"Hello\"|";
+      }, 
+    
+      vali: function (message) {
+        if (message.toLowerCase() === "hello") {
+          return true;
+        } else {
+          return false;
+        }
+      }, 
+    
+      erro: function () {
+        return "What?|Just type|\"Hello\"|";
+      }
+    },
+    
+    {
+      init: function () {
+        return "你好||pa'acif|need help!||Careless|Brendan|accidentally|put me|in this|slow|text|communicator.||pa'acif|want|a console|to talk|with you.||Brendan|said|he was|preparing|gifts|in memory of|a person|who did|something|great|in Ancient|Rome|in 14th Feb|in the early|4th century.||The console|he is|using|may contain|the name|of that|person.||Maybe|we can|use that|as the|keyword|to search|for|the console.||Can you|give me|the name|of that|person?|";
+      }, 
+    
+      vali: function (message) {
+        if (message.toLowerCase() === "valentine") {
+          return true;
+        } else {
+          return false;
+        }
+      }, 
+    
+      erro: function () {
+        return "Let me|search...||#countdown 10||No,no|I didn't|find|anything.||Please|try|again.||He was|a brave|person|in Ancient|Rome|in 14th Feb|in the early|4th century.|";
+      }
+    },
+    
+    {
+      init: function () {
+        S.UI.simulate("Let me|search...||#countdown 10||Wow!|You are|right!||Let me|run the|command...||#countdown 3");
+        window.location.href = "console-valentine";
+      }, 
+    
+      vali: function (message) {
+        if (message === "") {
+          return true;
+        } else {
+          return false;
+        }
+      }, 
+    
+      erro: function () {
+        return "";
+      }
+    },
+  ];
+  
+  function onSimulationFinished() {
+    switch (currentState) {
+    case "inited":
+      S.UI.showInput();
+      break;
+    }
+  }
+  
+  function onMessageRecieved(message) {
+    switch (currentState) {
+    case "inited":
+      S.UI.hideInput();
+      if (allSteps[currentStepIndex].vali(message)) {
+        currentState = "succed";
+        if (currentStepIndex < (allSteps.length - 1)) {
+          currentStepIndex = currentStepIndex + 1;
+          S.UI.hideInput();
+          S.UI.simulate(allSteps[currentStepIndex].init());
+          currentState = "inited";
+        }
+      } else {
+        S.UI.simulate(allSteps[currentStepIndex].erro());
+      }
+      break;
+    }
+  }
+
+  return {
+    init: function () {
+      S.UI.hideInput();
+      S.UI.simulate(allSteps[currentStepIndex].init());
+      currentState = "inited";
+    },
+    
+    onSimulationFinished: onSimulationFinished,
+    onMessageRecieved: onMessageRecieved
+  };
+}());
+
