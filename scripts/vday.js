@@ -1,4 +1,5 @@
 S.VDAY = (function () {
+  var isRedirect = false;
   var currentState = null;
   var currentStepIndex = 0;
   var allSteps = [
@@ -40,8 +41,8 @@ S.VDAY = (function () {
     
     {
       init: function () {
-        S.UI.simulate("Let me|search...||#countdown 10||Wow!|You are|right!||Let me|run the|command...||#countdown 3");
-        window.location.href = "console-valentine";
+        isRedirect = true;
+        return "Let me|search...||#countdown 10||Wow!|You are|right!||Let me|run the|command...||#countdown 3";
       }, 
     
       vali: function (message) {
@@ -59,12 +60,17 @@ S.VDAY = (function () {
   ];
   
   function onSimulationFinished() {
+    if (isRedirect) {
+      window.location.href = "console-valentine";
+    }
+    
     switch (currentState) {
     case "inited":
       S.UI.showInput();
       break;
     }
   }
+  
   
   function onMessageRecieved(message) {
     switch (currentState) {
